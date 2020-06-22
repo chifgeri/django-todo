@@ -1,0 +1,6 @@
+{% for todo in todo_list  %}
+   <div class="todoText">
+    <input type='checkbox' value={{item.done}} />
+    {{ todo.text }}
+   </div>
+{% endfor %}
