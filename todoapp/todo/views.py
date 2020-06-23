@@ -1,5 +1,8 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from django.views.generic import ListView, edit
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from .models import TodoItem
 from .forms import TodoCreateForm
 
@@ -10,7 +13,7 @@ class TodoListView(ListView):
     context_object_name = 'todo_list'
     
     def get_queryset(self):
-        return super().get_queryset()
+        return super().get_queryset().order_by('-priority')
     
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
@@ -27,3 +30,16 @@ class CreateTodo(edit.FormView):
     def form_valid(self, form):
         form.create_todo()
         return super().form_valid(form)
+
+
+def increment(request, todo_id):
+    todo = get_object_or_404(TodoItem, pk=todo_id)
+    todo.update_priority('increment')
+
+    return HttpResponseRedirect(reverse('list'))
+
+def decrease(request, todo_id):
+    todo = get_object_or_404(TodoItem, pk=todo_id)
+    todo.update_priority('decrease')
+
+    return HttpResponseRedirect(reverse('list'))

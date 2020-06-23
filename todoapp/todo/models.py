@@ -19,24 +19,41 @@ class TodoItem(models.Model):
         return reverse("todoitem_detail", kwargs={"pk": self.pk})
 
     def check_todo(self):
-      self.done = True
-      self.priority = 0
-      self.reprioritize()
-      self.save()
+        self.done = True
+        self.priority = 0
+        self.reprioritize()
+        self.save()
     
     def reprioritize(self):
-      items = TodoItem.objects.filter(priority__gt=self.priority)
-      for item in items:
-        print(item)
-        item.priority = item.priority - 1
-        item.save()
+        items = TodoItem.objects.filter(priority__gt=self.priority)
+        for item in items:
+            print(item)
+            item.priority = item.priority - 1
+            item.save()
     
     @classmethod
     def get_max_priority(cls):
         max_prior = cls.objects.aggregate(Max('priority'))
         max_val = max_prior['priority__max']
         if max_val is None:
-          return 0
+            return 0
         else:
-          return max_val
+            return max_val
+    
+    def update_priority(self, direction):
+        try:
+            if direction == 'increment':
+                tUp = TodoItem.objects.get(priority=self.priority + 1)
+                tUp.priority -= 1
+                tUp.save()
+                self.priority += 1
+                self.save()
+            elif direction == 'decrease':
+                tDown = TodoItem.objects.get(priority=self.priority - 1)
+                tDown.priority += 1
+                tDown.save()
+                self.priority -= 1
+                self.save()
+        except TodoItem.DoesNotExist:
+            print('Todo item does not exist')
 

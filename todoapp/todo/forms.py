@@ -6,5 +6,5 @@ class TodoCreateForm(forms.Form):
 
   def create_todo(self):
       priority = TodoItem.get_max_priority()
-      todo = TodoItem(text=self.data['text'], priority=priority)
+      todo = TodoItem(text=self.data['text'], priority=priority+1)
       todo.save()
