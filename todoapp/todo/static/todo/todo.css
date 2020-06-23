@@ -1,0 +1,36 @@
+.todoContainer {
+  margin: 2em;
+  box-shadow: 10px 10px 10px 2px rgba(130, 130, 130, 0.8);
+  border-radius: 10px;
+  width: 50%;
+}
+
+.list {
+  padding-left: 1.2em;
+  padding-right: 1.2em;
+  padding-top: 1.2em;
+}
+
+.todoItem {
+  display: flex;
+  justify-content: space-between;
+  border-top: aqua;
+}
+
+.listHeading {
+  border-radius: 10px 10px 0 0;
+  background-color: rgb(75, 75, 240);
+  font-size: 1.5em;
+  padding: 10px;
+  color: #fff;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.addForm {
+  display: flex;
+  justify-content: center;
+}

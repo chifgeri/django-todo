@@ -20,6 +20,7 @@ class TodoListView(ListView):
         context = super().get_context_data(**kwargs)
         # Add in a QuerySet of all the books
         context['add_form'] = TodoCreateForm()
+        context['max_prior'] = TodoItem.get_max_priority()
         return context
 
 class CreateTodo(edit.FormView):
