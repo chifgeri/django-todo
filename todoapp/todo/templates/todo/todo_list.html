@@ -1,0 +1,46 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'todo/todo.css' %}">
+<div class="todoContainer">
+  <div class="listHeading">
+    Todo List
+  </div>
+  <div class="list">
+  {% for todo in todo_list  %}
+    <div class="todoItem">
+      <form action='./{{todo.id}}/check' method="POST">
+        {% csrf_token %}
+        <input type='checkbox' name='check' {% if todo.done %} checked {% endif %} onclick='this.form.submit();' />
+      </form>
+          {% if  todo.done %}
+            <del>{{todo.text}}</del>
+          {% else %}
+            {{ todo.text }}
+          {% endif %}
+      <div class="buttons">
+        {% if todo.done == False %}
+          {% if  todo.priority < max_prior %}
+            <form action="./{{todo.id}}/increment" method="POST">
+            {% csrf_token %}
+              <button type="submit">Up</button>
+            </form>
+          {% endif %}
+          {% if  todo.priority > 1%}
+          <form action="./{{todo.id}}/decrease" method="POST">
+          {% csrf_token %}
+            <button type="submit">Down</button>
+          </form>
+          {% endif %}
+        {% endif %}
+        <form action="./{{todo.id}}/remove" method="POST">
+        {% csrf_token %}
+          <button type="submit">Remove</button>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+    <div class="addForm">
+      {% include "todo/todo_create.html" with form=add_form %}
+    </div>
+  </div>
+</div>
