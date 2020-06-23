@@ -57,3 +57,6 @@ class TodoItem(models.Model):
         except TodoItem.DoesNotExist:
             print('Todo item does not exist')
 
+    def delete(self, *args, **kwargs):
+        self.reprioritize()
+        super().delete(*args, **kwargs)

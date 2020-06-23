@@ -10,6 +10,10 @@
     {% csrf_token %}
       <button type="submit">Down</button>
     </form>
+    <form action="./{{todo.id}}/remove" method="POST">
+    {% csrf_token %}
+      <button type="submit">Remove</button>
+    </form>
    </div>
 {% endfor %}
 {% include "todo/todo_create.html" with form=add_form %}

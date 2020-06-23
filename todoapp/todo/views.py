@@ -43,3 +43,9 @@ def decrease(request, todo_id):
     todo.update_priority('decrease')
 
     return HttpResponseRedirect(reverse('list'))
+
+def remove(request, todo_id):
+    todo = TodoItem.objects.get(pk=todo_id)
+    todo.delete()
+
+    return HttpResponseRedirect(reverse('list'))
