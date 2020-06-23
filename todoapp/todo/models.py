@@ -20,14 +20,18 @@ class TodoItem(models.Model):
 
     def check_todo(self):
         self.done = True
-        self.priority = 0
         self.reprioritize()
+        self.priority = 0
+        self.save()
+    
+    def uncheck(self):
+        self.done = False
+        self.priority = TodoItem.get_max_priority() + 1
         self.save()
     
     def reprioritize(self):
         items = TodoItem.objects.filter(priority__gt=self.priority)
         for item in items:
-            print(item)
             item.priority = item.priority - 1
             item.save()
     

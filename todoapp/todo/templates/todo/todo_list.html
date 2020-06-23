@@ -1,19 +1,28 @@
-{% for todo in todo_list  %}
-   <div class="todoText">
-    <input type='checkbox' {% if todo.done %} checked {% endif %} />
-    {{ todo.text }}
-    <form action="./{{todo.id}}/increment" method="POST">
-    {% csrf_token %}
-      <button type="submit">Up</button>
+<div class="todoContainer">
+  {% for todo in todo_list  %}
+    <div class="todoItem">
+    <form action='./{{todo.id}}/check' method="POST">
+      {% csrf_token %}
+      <input type='checkbox' name='check' {% if todo.done %} checked {% endif %} onclick='this.form.submit();' />
     </form>
-    <form action="./{{todo.id}}/decrease" method="POST">
-    {% csrf_token %}
-      <button type="submit">Down</button>
-    </form>
-    <form action="./{{todo.id}}/remove" method="POST">
-    {% csrf_token %}
-      <button type="submit">Remove</button>
-    </form>
-   </div>
-{% endfor %}
+        {% if  todo.done %}
+          <del>{{todo.text}}</del>
+        {% else %}
+          {{ todo.text }}
+        {% endif %}
+      <form action="./{{todo.id}}/increment" method="POST">
+      {% csrf_token %}
+        <button type="submit">Up</button>
+      </form>
+      <form action="./{{todo.id}}/decrease" method="POST">
+      {% csrf_token %}
+        <button type="submit">Down</button>
+      </form>
+      <form action="./{{todo.id}}/remove" method="POST">
+      {% csrf_token %}
+        <button type="submit">Remove</button>
+      </form>
+    </div>
+  {% endfor %}
+</div>
 {% include "todo/todo_create.html" with form=add_form %}

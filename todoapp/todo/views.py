@@ -49,3 +49,12 @@ def remove(request, todo_id):
     todo.delete()
 
     return HttpResponseRedirect(reverse('list'))
+
+def check(request, todo_id):
+    todo = get_object_or_404(TodoItem, pk=todo_id)
+    if request.POST.get('check', False):
+      todo.check_todo()
+    else:
+      todo.uncheck()
+
+    return HttpResponseRedirect(reverse('list'))
