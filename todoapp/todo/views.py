@@ -3,8 +3,10 @@ from django.http import HttpResponseRedirect
 from django.views.generic import ListView, edit
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from .models import TodoItem
 from .serializers import TodoItemSerializer
 from .forms import TodoCreateForm
@@ -77,6 +79,37 @@ class TodoItemViewSet(viewsets.ModelViewSet):
             new_todo = TodoItem.objects.create(text=data['text'], priority=max_prior+1)
             return Response(TodoItemSerializer(new_todo).data, status=status.HTTP_201_CREATED)
         except IntegrityError:
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response("Can't create this todo", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        
+    @action(detail=True, methods=["POST"])
+    def check(self, request, pk):
+        try:
+            todo = TodoItem.objects.get(pk=pk)
+            with transaction.atomic():
+                before = todo.done
+                if todo.done == False:
+                    todo.check_todo()
+                else:
+                    todo.uncheck()
+            if before == todo.done:
+                return Response("Can't check or uncheck this todo", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response(status=status.HTTP_200_OK)
+        except TodoItem.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=["POST"])
+    def move(self, request, pk):
+        try:
+            todo = TodoItem.objects.get(pk=pk)
+            with transaction.atomic():
+                if 'direction' in request.data:
+                    if request.data['direction'] == 'up':
+                        todo.update_priority('increment')
+                    elif request.data['direction'] == 'down':
+                        todo.update_priority('decrease')
+                    return Response(status=status.HTTP_200_OK)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+        except TodoItem.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
