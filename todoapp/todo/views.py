@@ -3,7 +3,8 @@ from django.http import HttpResponseRedirect
 from django.views.generic import ListView, edit
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 from .models import TodoItem
 from .serializers import TodoItemSerializer
 from .forms import TodoCreateForm
@@ -66,3 +67,16 @@ def check(request, todo_id):
 class TodoItemViewSet(viewsets.ModelViewSet):
     queryset = TodoItem.objects.all().order_by('-priority')
     serializer_class = TodoItemSerializer
+
+    def create(self, request):
+        serializer = TodoItemSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        try:
+            max_prior = TodoItem.get_max_priority()
+            new_todo = TodoItem.objects.create(text=data['text'], priority=max_prior+1)
+            return Response(TodoItemSerializer(new_todo).data, status=status.HTTP_201_CREATED)
+        except IntegrityError:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        
