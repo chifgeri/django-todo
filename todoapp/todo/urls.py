@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import TodoListView, CreateTodo, increment, decrease, remove, check
+from .views import TodoListView, CreateTodo, increment, decrease, remove, check, TodoItemViewSet
+from rest_framework import routers
 
 urlpatterns = [
     path('', TodoListView.as_view(), name='list'),
@@ -9,3 +10,6 @@ urlpatterns = [
     path('<int:todo_id>/remove', remove, name='remove'),
     path('<int:todo_id>/check', check, name='check'),
 ]
+
+todorouter = routers.DefaultRouter()
+todorouter.register(r'todos',TodoItemViewSet)

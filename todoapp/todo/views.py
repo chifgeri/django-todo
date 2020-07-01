@@ -3,7 +3,9 @@ from django.http import HttpResponseRedirect
 from django.views.generic import ListView, edit
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from rest_framework import viewsets
 from .models import TodoItem
+from .serializers import TodoItemSerializer
 from .forms import TodoCreateForm
 
 # Create your views here.
@@ -59,3 +61,8 @@ def check(request, todo_id):
       todo.uncheck()
 
     return HttpResponseRedirect(reverse('list'))
+
+
+class TodoItemViewSet(viewsets.ModelViewSet):
+    queryset = TodoItem.objects.all().order_by('-priority')
+    serializer_class = TodoItemSerializer
