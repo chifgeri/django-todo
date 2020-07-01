@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import ListView, edit
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.http import Http404
 from .models import TodoItem
 from .forms import TodoCreateForm
 
@@ -34,28 +35,39 @@ class CreateTodo(edit.FormView):
 
 
 def increment(request, todo_id):
-    todo = get_object_or_404(TodoItem, pk=todo_id)
-    todo.update_priority('increment')
+    if request.method == 'POST':
+        todo = get_object_or_404(TodoItem, pk=todo_id)
+        todo.update_priority('increment')
 
-    return HttpResponseRedirect(reverse('list'))
+        return HttpResponseRedirect(reverse('list'))
+    else:
+        raise Http404('Method not allowed')
 
 def decrease(request, todo_id):
-    todo = get_object_or_404(TodoItem, pk=todo_id)
-    todo.update_priority('decrease')
+    if request.method == 'POST':
+        todo = get_object_or_404(TodoItem, pk=todo_id)
+        todo.update_priority('decrease')
 
-    return HttpResponseRedirect(reverse('list'))
+        return HttpResponseRedirect(reverse('list'))
+    else:
+        raise Http404('Method not allowed')
 
 def remove(request, todo_id):
-    todo = TodoItem.objects.get(pk=todo_id)
-    todo.delete()
+    if request.method == 'POST':
+        todo = TodoItem.objects.get(pk=todo_id)
+        todo.delete()
 
-    return HttpResponseRedirect(reverse('list'))
+        return HttpResponseRedirect(reverse('list'))
+    else:
+        raise Http404('Method not allowed')
 
 def check(request, todo_id):
-    todo = get_object_or_404(TodoItem, pk=todo_id)
-    if request.POST.get('check', False):
-      todo.check_todo()
+    if request.method == 'POST':
+        todo = get_object_or_404(TodoItem, pk=todo_id)
+        if request.POST.get('check', False):
+            todo.check_todo()
+        else:
+            todo.uncheck()
+        return HttpResponseRedirect(reverse('list'))
     else:
-      todo.uncheck()
-
-    return HttpResponseRedirect(reverse('list'))
+        raise Http404('Method not allowed')
